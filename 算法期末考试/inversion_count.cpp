@@ -5,52 +5,40 @@
 
 using namespace std;
 
-int merge_sort(vector<int> &A, int left, int right)
+const int maxn = 1e5 + 10;
+int q[maxn], tmp[maxn];
+int ans;
+
+void merge_sort(int q[], int l, int r)
 {
-	if (left >= right)
+	// 如果只有一个数字或者没有数字, 则无需排序
+	if (l >= r)
+		return;
+	int mid = (l + r) / 2;
+	merge_sort(q, l, mid);	   // 分解左序列
+	merge_sort(q, mid + 1, r); // 分解右序列
+	int k = l;
+	int i = l;
+	int j = mid + 1;
+	while (i <= mid && j <= r)
 	{
-		return 0;
-	}
-	int mid = (left + right) / 2;
-	// merge_sort递归
-	int count = merge_sort(A, left, mid) + merge_sort(A, mid + 1, right);
-	int i = left, j = mid + 1; // 两个指针, 分别指向两个数组的开头
-	vector<int> B;
-	while (i <= mid && j <= right)
-	{
-		if (A[i] <= A[j])
-		{
-			B.push_back(A[i]);
-			i++;
-		}
+		if (q[i] <= q[j])
+			tmp[k++] = q[i++];
 		else
 		{
-			count += mid - i + 1;
-			B.push_back(A[j]);
-			j++;
+			tmp[k++] = q[j++];
+			ans += mid - i + 1; // 统计产生逆序对的数量
 		}
 	}
 	while (i <= mid)
-	{
-		B.push_back(A[i]);
-		i++;
-	}
-	while (j <= right)
-	{
-		B.push_back(A[j]);
-		j++;
-	}
-	for (int k = left; k <= right; k++)
-	{
-		A[k] = B[k - left];
-	}
-	return count;
+		tmp[k++] = q[i++]; // 复制左边子序列剩余
+	while (j <= r)
+		tmp[k++] = q[j++]; // 复制右边子序列剩余
+	for (int i = l; i <= r; i++)
+		q[i] = tmp[i];
 }
 
 int main()
 {
-	vector<int> A = {1, 3, 5, 2, 4, 6};
-	int count = merge_sort(A, 0, A.size() - 1);
-	cout << count << endl;
 	return 0;
 }
